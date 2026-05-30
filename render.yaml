@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: wholesale-b2b-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    rootDir: backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false # Set this in Render Dashboard (e.g. MongoDB Atlas Connection URI)
+      - key: JWT_SECRET
+        generateValue: true # Generates a secure random JWT secret automatically
+      - key: CORS_ORIGINS
+        sync: false # Set this to your Netlify site URL (e.g. https://your-site.netlify.app)
