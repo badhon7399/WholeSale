@@ -1,5 +1,4 @@
 [build]
-  base = "frontend"
   command = "npm run build"
   publish = ".next"
 
@@ -7,4 +6,5 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
 
-# Set up redirects for Next.js if necessary (handled automatically by Netlify's Next.js Essential Plugin)
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
