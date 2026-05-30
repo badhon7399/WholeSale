@@ -1,0 +1,28 @@
+# Keep Render free-tier backend alive by pinging the health endpoint
+# Render free services spin down after 15 minutes of inactivity.
+# This cron runs every 14 minutes to prevent that.
+
+name: Keep Backend Alive
+
+on:
+  schedule:
+    # Every 14 minutes, 24/7
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  ping:
+    name: Ping Backend Health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render backend
+        run: |
+          echo "Pinging backend at $(date -u)"
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_BACKEND_URL }}/api/health" --max-time 30)
+          echo "Response code: $response"
+          if [ "$response" -ne 200 ]; then
+            echo "::warning::Backend returned $response — it may be waking up. Retrying in 30s..."
+            sleep 30
+            retry=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_BACKEND_URL }}/api/health" --max-time 30)
+            echo "Retry response code: $retry"
+          fi
