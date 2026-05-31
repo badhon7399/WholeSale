@@ -203,7 +203,7 @@ export default function Home() {
           </div>
 
           {/* Right Showcase Image & Floating Stats */}
-          <div className="w-full col-span-5 lg:col-span-7 relative h-[140px] xs:h-[180px] sm:h-[400px] lg:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-md sm:shadow-2xl group border border-gray-150">
+          <div className="w-full col-span-5 lg:col-span-7 relative h-[140px] xs:h-[180px] sm:h-[400px] lg:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-md sm:shadow-2xl group border border-gray-150 isolate">
             <img 
               alt="Cargo shipping containers at a port" 
               className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[6s]" 
@@ -224,7 +224,7 @@ export default function Home() {
             </div>
 
             {/* Bottom Stats Grid (Desktop & Tablet) */}
-            <div className="absolute bottom-0 inset-x-0 bg-brand-dark/95 backdrop-blur-md text-white px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center md:text-left hidden sm:grid">
+            <div className="absolute bottom-0 inset-x-0 bg-brand-dark/95 backdrop-blur-md text-white px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center md:text-left hidden sm:grid rounded-b-2xl sm:rounded-b-3xl">
               <div className="flex items-center gap-2.5 justify-center md:justify-start">
                 <Store className="w-5 h-5 text-brand-light shrink-0" />
                 <div>
