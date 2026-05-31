@@ -43,10 +43,10 @@ export default function RootLayout({
               </Suspense>
               <main className="flex-grow flex flex-col">
                 {children}
-                {/* Bottom spacer for mobile bottom navigation height */}
-                <div className="lg:hidden h-16 w-full shrink-0" />
               </main>
               <Footer />
+              {/* Bottom spacer for mobile bottom navigation height */}
+              <div className="lg:hidden h-20 w-full shrink-0 bg-transparent" />
             </CartProvider>
           </LanguageProvider>
         </AuthProvider>
