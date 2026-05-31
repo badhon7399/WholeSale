@@ -1,20 +1,53 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { 
-  ShieldCheck, MessageSquare, Plus, PlusCircle, Calendar, 
-  MapPin, Tag, ChevronDown, Check, AlertCircle 
+  ShieldCheck, MessageSquare, PlusCircle, Calendar, 
+  MapPin, Tag, Check, AlertCircle 
 } from 'lucide-react';
 import { api } from '@/lib/api';
+interface Category {
+  _id: string;
+  name: string;
+}
+
+interface RFQ {
+  _id: string;
+  title: string;
+  description: string;
+  category: Category;
+  quantity: number;
+  targetPrice: number;
+  deliveryLocation: string;
+  requiredDate: string;
+  status: 'open' | 'closed';
+  buyer: {
+    _id: string;
+    name: string;
+    companyName: string;
+  } | string;
+  bids: Array<{
+    _id: string;
+    supplier: {
+      _id: string;
+      name: string;
+      companyName: string;
+      isVerified?: boolean;
+    } | string;
+    offeredPrice: number;
+    message: string;
+    status: 'pending' | 'accepted' | 'rejected';
+  }>;
+}
 
 export default function RfqHub() {
   const { user, token } = useAuth();
   const { t, language } = useLanguage();
   
-  const [rfqs, setRfqs] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [rfqs, setRfqs] = useState<RFQ[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -34,21 +67,20 @@ export default function RfqHub() {
   });
   
   // Place Bid Modal State
-  const [activeBidRfq, setActiveBidRfq] = useState<any | null>(null);
-  const [selectedRfqDetails, setSelectedRfqDetails] = useState<any | null>(null);
+  const [activeBidRfq, setActiveBidRfq] = useState<RFQ | null>(null);
+  const [selectedRfqDetails, setSelectedRfqDetails] = useState<RFQ | null>(null);
   const [bidPrice, setBidPrice] = useState('');
   const [bidMessage, setBidMessage] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
 
   // Load RFQs & Categories
-  const loadData = async () => {
-    setLoading(true);
+  const loadData = useCallback(async () => {
     try {
       const catData = await api.get('/categories');
       if (Array.isArray(catData)) {
         setCategories(catData);
         if (catData.length > 0) {
-          setNewRfq((prev) => ({ ...prev, category: (catData[0] as any)._id }));
+          setNewRfq((prev) => ({ ...prev, category: catData[0]._id }));
         }
       }
 
@@ -57,16 +89,18 @@ export default function RfqHub() {
         : '/rfqs';
       const rfqData = await api.get(rfqUrl);
       if (Array.isArray(rfqData)) setRfqs(rfqData);
-    } catch (err: any) {
-      console.error('Error fetching RFQ data:', err);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : 'Error fetching RFQ data';
+      console.error('Error fetching RFQ data:', errMsg);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCat]);
 
   useEffect(() => {
+    // eslint-disable-next-line
     loadData();
-  }, [selectedCat]);
+  }, [loadData]);
 
   // Handle Post RFQ Click Trigger
   const handlePostRfqClick = () => {
@@ -107,8 +141,9 @@ export default function RfqHub() {
       });
       loadData();
       setTimeout(() => setActionSuccess(''), 4000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit RFQ sourcing request.');
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to submit RFQ sourcing request.';
+      setError(errMsg);
     }
   };
 
@@ -117,10 +152,12 @@ export default function RfqHub() {
     e.preventDefault();
     setError('');
     
-    if (!user || user.role !== 'supplier') {
-      setError(language === 'en' ? 'Only Suppliers can bid on RFQ sourcing requests.' : 'শুধুমাত্র সরবরাহকারীরা আরএফকিউতে বিড পেশ করতে পারবেন।');
+    if (!user) {
+      setError(language === 'en' ? 'Please login to submit quotation bids.' : 'কোটেশন বা বিড পেশ করতে লগইন করুন।');
       return;
     }
+
+    if (!activeBidRfq) return;
 
     try {
       await api.post(`/rfqs/${activeBidRfq._id}/bid`, {
@@ -134,8 +171,9 @@ export default function RfqHub() {
       setBidMessage('');
       loadData();
       setTimeout(() => setActionSuccess(''), 4000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to place quotation bid.');
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to place quotation bid.';
+      setError(errMsg);
     }
   };
 
@@ -148,8 +186,9 @@ export default function RfqHub() {
       setSelectedRfqDetails(null);
       loadData();
       setTimeout(() => setActionSuccess(''), 4000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to accept bid.');
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to accept bid.';
+      setError(errMsg);
     }
   };
 
@@ -251,7 +290,7 @@ export default function RfqHub() {
               <div>
                 <div className="flex justify-between items-start gap-2">
                   <span className="text-[9px] font-bold text-brand-primary bg-brand-light px-2.5 py-1 rounded-full">
-                    {rfq.buyer?.companyName || 'Verified Corporate'}
+                    {(typeof rfq.buyer === 'object' && rfq.buyer ? rfq.buyer.companyName : '') || 'Verified Corporate'}
                   </span>
                   <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1">
                     <MapPin className="w-3 h-3 text-brand-primary" />
@@ -299,11 +338,7 @@ export default function RfqHub() {
                     onClick={(e) => {
                       e.stopPropagation();
                       if (!user) {
-                        setError(language === 'en' ? 'Please login as a supplier to submit quotations.' : 'কোটেশন জমা দিতে সরবরাহকারী হিসেবে লগইন করুন।');
-                        return;
-                      }
-                      if (user.role !== 'supplier') {
-                        setError(language === 'en' ? 'Only Suppliers can submit quotation bids.' : 'শুধুমাত্র সরবরাহকারীরা কোটেশন বা বিড পেশ করতে পারবেন।');
+                        setError(language === 'en' ? 'Please login to submit quotations.' : 'কোটেশন জমা দিতে লগইন করুন।');
                         return;
                       }
                       setActiveBidRfq(rfq);
@@ -505,9 +540,20 @@ export default function RfqHub() {
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start border-b border-gray-150 pb-4">
               <div>
-                <span className="text-[10px] font-bold text-brand-primary bg-brand-light px-2.5 py-1 rounded-full uppercase tracking-wider">
-                  {selectedRfqDetails.buyer?.companyName || 'Verified Corporate Buyer'}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-brand-primary bg-brand-light px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    {(typeof selectedRfqDetails.buyer === 'object' && selectedRfqDetails.buyer ? selectedRfqDetails.buyer.companyName : '') || 'Verified Corporate Buyer'}
+                  </span>
+                  {selectedRfqDetails.status === 'open' ? (
+                    <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-emerald-100">
+                      {openLabel}
+                    </span>
+                  ) : (
+                    <span className="bg-gray-100 text-gray-650 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                      {closedLabel}
+                    </span>
+                  )}
+                </div>
                 <h2 className="font-black text-gray-900 text-lg sm:text-xl mt-2 leading-snug">{selectedRfqDetails.title}</h2>
               </div>
               <button 
@@ -558,12 +604,7 @@ export default function RfqHub() {
                     <button
                       onClick={() => {
                         if (!user) {
-                          setError(language === 'en' ? 'Please login as a supplier to submit quotations.' : 'কোটেশন জমা দিতে সরবরাহকারী হিসেবে লগইন করুন।');
-                          setSelectedRfqDetails(null);
-                          return;
-                        }
-                        if (user.role !== 'supplier') {
-                          setError(language === 'en' ? 'Only Suppliers can submit quotation bids.' : 'শুধুমাত্র সরবরাহকারীরা কোটেশন বা বিড পেশ করতে পারবেন।');
+                          setError(language === 'en' ? 'Please login to submit quotations.' : 'কোটেশন জমা দিতে লগইন করুন।');
                           setSelectedRfqDetails(null);
                           return;
                         }
@@ -579,9 +620,9 @@ export default function RfqHub() {
 
                 {selectedRfqDetails.bids && selectedRfqDetails.bids.length > 0 ? (
                   <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-                    {selectedRfqDetails.bids.map((bid: any) => {
-                      const isBidOwner = user?.id === bid.supplier?._id || user?.id === bid.supplier;
-                      const isRfqOwner = user?.id === selectedRfqDetails.buyer?._id || user?.id === selectedRfqDetails.buyer;
+                    {selectedRfqDetails.bids.map((bid) => {
+                      const isBidOwner = user?.id === (typeof bid.supplier === 'object' && bid.supplier ? bid.supplier._id : bid.supplier);
+                      const isRfqOwner = user?.id === (typeof selectedRfqDetails.buyer === 'object' && selectedRfqDetails.buyer ? selectedRfqDetails.buyer._id : selectedRfqDetails.buyer);
                       return (
                         <div 
                           key={bid._id} 
@@ -595,9 +636,9 @@ export default function RfqHub() {
                             <div>
                               <div className="flex items-center gap-2">
                                 <span className="font-bold text-xs text-gray-900 normal-case">
-                                  {bid.supplier?.companyName || 'Verified Supplier'}
+                                  {(typeof bid.supplier === 'object' && bid.supplier ? bid.supplier.companyName : '') || 'Verified Supplier'}
                                 </span>
-                                {bid.supplier?.isVerified && (
+                                {typeof bid.supplier === 'object' && bid.supplier?.isVerified && (
                                   <ShieldCheck className="w-3.5 h-3.5 text-brand-primary" />
                                 )}
                               </div>

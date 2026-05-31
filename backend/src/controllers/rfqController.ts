@@ -69,8 +69,8 @@ export const createRfq = async (req: AuthRequest, res: Response): Promise<void> 
 
 export const placeBid = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    if (!req.user || req.user.role !== 'supplier') {
-      res.status(403).json({ message: 'Only verified suppliers can submit quotes/bids' });
+    if (!req.user) {
+      res.status(401).json({ message: 'Please log in to submit quotes/bids' });
       return;
     }
 
