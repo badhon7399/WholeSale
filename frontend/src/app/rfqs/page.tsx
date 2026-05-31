@@ -35,6 +35,7 @@ export default function RfqHub() {
   
   // Place Bid Modal State
   const [activeBidRfq, setActiveBidRfq] = useState<any | null>(null);
+  const [selectedRfqDetails, setSelectedRfqDetails] = useState<any | null>(null);
   const [bidPrice, setBidPrice] = useState('');
   const [bidMessage, setBidMessage] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
@@ -66,6 +67,20 @@ export default function RfqHub() {
   useEffect(() => {
     loadData();
   }, [selectedCat]);
+
+  // Handle Post RFQ Click Trigger
+  const handlePostRfqClick = () => {
+    setError('');
+    if (!user) {
+      setError(language === 'en' ? 'Please log in to submit sourcing RFQs.' : 'আরএফকিউ পোস্ট করতে অনুগ্রহ করে লগইন করুন।');
+      return;
+    }
+    if (user.role !== 'buyer') {
+      setError(language === 'en' ? 'Only Buyers can submit RFQs. Please login with a Buyer profile.' : 'শুধুমাত্র বায়াররা আরএফকিউ পোস্ট করতে পারেন। অনুগ্রহ করে বায়ার অ্যাকাউন্ট দিয়ে লগইন করুন।');
+      return;
+    }
+    setShowPostModal(true);
+  };
 
   // Handle Post RFQ Submission
   const handlePostRfqSubmit = async (e: React.FormEvent) => {
@@ -124,6 +139,20 @@ export default function RfqHub() {
     }
   };
 
+  // Handle Accept Bid
+  const handleAcceptBid = async (rfqId: string, bidId: string) => {
+    setError('');
+    try {
+      await api.patch(`/rfqs/${rfqId}/bid/${bidId}`, {}, { token: token || undefined });
+      setActionSuccess(language === 'en' ? 'Bid Accepted Successfully!' : 'সফলভাবে দরপ্রস্তাব গ্রহণ করা হয়েছে!');
+      setSelectedRfqDetails(null);
+      loadData();
+      setTimeout(() => setActionSuccess(''), 4000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to accept bid.');
+    }
+  };
+
   // Bilingual translation labels
   const allRequestsLabel = language === 'en' ? 'All Requests' : 'সব সোর্সিং রিকুয়েস্ট';
   const postRfqLabel = language === 'en' ? 'Post Sourcing RFQ' : 'আরএফকিউ পোস্ট করুন';
@@ -154,15 +183,13 @@ export default function RfqHub() {
           </p>
         </div>
 
-        {user && user.role === 'buyer' && (
-          <button 
-            onClick={() => setShowPostModal(true)}
-            className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold px-6 py-3.5 rounded-xl flex items-center gap-1.5 transition-colors relative z-10 shadow-lg text-xs self-start lg:self-auto whitespace-nowrap"
-          >
-            <PlusCircle className="w-4.5 h-4.5" />
-            {postRfqLabel}
-          </button>
-        )}
+        <button 
+          onClick={handlePostRfqClick}
+          className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold px-6 py-3.5 rounded-xl flex items-center gap-1.5 transition-colors relative z-10 shadow-lg text-xs self-start lg:self-auto whitespace-nowrap"
+        >
+          <PlusCircle className="w-4.5 h-4.5" />
+          {postRfqLabel}
+        </button>
       </div>
 
       {/* Global alerts */}
@@ -218,7 +245,8 @@ export default function RfqHub() {
           {rfqs.map((rfq) => (
             <div 
               key={rfq._id} 
-              className="bg-white rounded-3xl border border-gray-150 p-4 sm:p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative group"
+              className="bg-white rounded-3xl border border-gray-150 p-4 sm:p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative group cursor-pointer"
+              onClick={() => setSelectedRfqDetails(rfq)}
             >
               <div>
                 <div className="flex justify-between items-start gap-2">
@@ -267,16 +295,23 @@ export default function RfqHub() {
                 </span>
                 
                 {rfq.status === 'open' ? (
-                  user?.role === 'supplier' ? (
-                    <button
-                      onClick={() => setActiveBidRfq(rfq)}
-                      className="bg-brand-primary hover:bg-brand-dark text-white font-bold text-xs px-4 py-2 rounded-xl transition-all"
-                    >
-                      {placeBidLabel}
-                    </button>
-                  ) : (
-                    <span className="text-xs font-bold text-brand-primary uppercase tracking-wider">{openLabel}</span>
-                  )
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!user) {
+                        setError(language === 'en' ? 'Please login as a supplier to submit quotations.' : 'কোটেশন জমা দিতে সরবরাহকারী হিসেবে লগইন করুন।');
+                        return;
+                      }
+                      if (user.role !== 'supplier') {
+                        setError(language === 'en' ? 'Only Suppliers can submit quotation bids.' : 'শুধুমাত্র সরবরাহকারীরা কোটেশন বা বিড পেশ করতে পারবেন।');
+                        return;
+                      }
+                      setActiveBidRfq(rfq);
+                    }}
+                    className="bg-brand-primary hover:bg-brand-dark text-white font-bold text-xs px-4 py-2 rounded-xl transition-all"
+                  >
+                    {placeBidLabel}
+                  </button>
                 ) : (
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50 px-2.5 py-1 rounded-md">{closedLabel}</span>
                 )}
@@ -460,6 +495,165 @@ export default function RfqHub() {
                 {submitOfferLabel}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* RFQ DETAILS & BIDS MODAL */}
+      {selectedRfqDetails && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-start border-b border-gray-150 pb-4">
+              <div>
+                <span className="text-[10px] font-bold text-brand-primary bg-brand-light px-2.5 py-1 rounded-full uppercase tracking-wider">
+                  {selectedRfqDetails.buyer?.companyName || 'Verified Corporate Buyer'}
+                </span>
+                <h2 className="font-black text-gray-900 text-lg sm:text-xl mt-2 leading-snug">{selectedRfqDetails.title}</h2>
+              </div>
+              <button 
+                onClick={() => setSelectedRfqDetails(null)} 
+                className="text-gray-400 hover:text-gray-650 text-xs font-bold shrink-0 ml-4"
+              >
+                {closeLabel}
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Description */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Description / Specifications</span>
+                <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line font-medium bg-gray-50 p-4 rounded-2xl normal-case">
+                  {selectedRfqDetails.description || 'No additional specifications provided.'}
+                </p>
+              </div>
+
+              {/* Specs Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-brand-light/20 p-4 rounded-2xl border border-brand-primary/5">
+                <div>
+                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Required Quantity</span>
+                  <span className="font-extrabold text-sm text-brand-dark mt-0.5">{selectedRfqDetails.quantity.toLocaleString()} units</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Target Price</span>
+                  <span className="font-extrabold text-sm text-brand-dark mt-0.5">{selectedRfqDetails.targetPrice} BDT</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Delivery Date</span>
+                  <span className="font-extrabold text-xs text-brand-dark mt-0.5">{new Date(selectedRfqDetails.requiredDate).toLocaleDateString()}</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Location</span>
+                  <span className="font-extrabold text-xs text-brand-dark mt-0.5 truncate block normal-case">{selectedRfqDetails.deliveryLocation}</span>
+                </div>
+              </div>
+
+              {/* Bids/Quotations List */}
+              <div className="space-y-3 pt-4 border-t border-gray-150">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-extrabold text-gray-900 text-sm sm:text-base flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 text-brand-primary" />
+                    <span>Quotation Offers ({selectedRfqDetails.bids ? selectedRfqDetails.bids.length : 0})</span>
+                  </h3>
+                  {selectedRfqDetails.status === 'open' && (
+                    <button
+                      onClick={() => {
+                        if (!user) {
+                          setError(language === 'en' ? 'Please login as a supplier to submit quotations.' : 'কোটেশন জমা দিতে সরবরাহকারী হিসেবে লগইন করুন।');
+                          setSelectedRfqDetails(null);
+                          return;
+                        }
+                        if (user.role !== 'supplier') {
+                          setError(language === 'en' ? 'Only Suppliers can submit quotation bids.' : 'শুধুমাত্র সরবরাহকারীরা কোটেশন বা বিড পেশ করতে পারবেন।');
+                          setSelectedRfqDetails(null);
+                          return;
+                        }
+                        setActiveBidRfq(selectedRfqDetails);
+                        setSelectedRfqDetails(null);
+                      }}
+                      className="bg-brand-primary hover:bg-brand-dark text-white font-bold text-xs px-4 py-2 rounded-xl transition-all"
+                    >
+                      {placeBidLabel}
+                    </button>
+                  )}
+                </div>
+
+                {selectedRfqDetails.bids && selectedRfqDetails.bids.length > 0 ? (
+                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                    {selectedRfqDetails.bids.map((bid: any) => {
+                      const isBidOwner = user?.id === bid.supplier?._id || user?.id === bid.supplier;
+                      const isRfqOwner = user?.id === selectedRfqDetails.buyer?._id || user?.id === selectedRfqDetails.buyer;
+                      return (
+                        <div 
+                          key={bid._id} 
+                          className={`p-4 rounded-2xl border transition-all ${
+                            bid.status === 'accepted'
+                              ? 'bg-emerald-50/50 border-emerald-200'
+                              : 'bg-white border-gray-150'
+                          }`}
+                        >
+                          <div className="flex justify-between items-start gap-4">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-xs text-gray-900 normal-case">
+                                  {bid.supplier?.companyName || 'Verified Supplier'}
+                                </span>
+                                {bid.supplier?.isVerified && (
+                                  <ShieldCheck className="w-3.5 h-3.5 text-brand-primary" />
+                                )}
+                              </div>
+                              <span className="text-[10px] text-gray-400">
+                                Offered Price: <span className="font-extrabold text-brand-dark">{bid.offeredPrice} BDT/unit</span>
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {bid.status === 'accepted' ? (
+                                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                  Accepted
+                                </span>
+                              ) : bid.status === 'rejected' ? (
+                                <span className="bg-red-50 text-red-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                  Declined
+                                </span>
+                              ) : (
+                                <span className="bg-gray-100 text-gray-650 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                  Pending
+                                </span>
+                              )}
+
+                              {/* Accept Bid Button for RFQ Creator */}
+                              {isRfqOwner && selectedRfqDetails.status === 'open' && bid.status === 'pending' && (
+                                <button
+                                  onClick={() => handleAcceptBid(selectedRfqDetails._id, bid._id)}
+                                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition-all shadow-sm normal-case"
+                                >
+                                  Accept Offer
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Private Message display logic */}
+                          {(isRfqOwner || isBidOwner) ? (
+                            <p className="text-gray-500 text-xs mt-2 leading-relaxed bg-gray-50 p-2.5 rounded-xl border border-gray-100 normal-case">
+                              <span className="font-bold text-gray-400 block text-[9px] uppercase tracking-wider mb-1">Proposal details (Private)</span>
+                              {bid.message}
+                            </p>
+                          ) : (
+                            <p className="text-gray-400 text-xs italic mt-2 normal-case">
+                              Proposal messages are private between buyer and supplier.
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 bg-gray-50 rounded-2xl">
+                    <p className="text-xs text-gray-400">No quotation offers submitted yet.</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
