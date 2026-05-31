@@ -185,19 +185,19 @@ export default function Home() {
             </p>
 
             {/* Sourcing Action Buttons */}
-            <div className="flex flex-col xs:flex-row gap-2 pt-1 sm:pt-2">
+            <div className="flex flex-row gap-1.5 xs:gap-2 pt-1 sm:pt-2">
               <Link 
                 href="/rfqs" 
-                className="bg-brand-primary hover:bg-brand-dark text-white font-bold text-[8px] xs:text-xs sm:text-sm px-2.5 py-2 xs:px-4 xs:py-3 rounded-lg xs:rounded-xl transition-all shadow-md flex items-center justify-center gap-1"
+                className="flex-1 bg-brand-primary hover:bg-brand-dark text-white font-bold text-[8px] xs:text-xs sm:text-sm px-2 py-2 xs:px-4 xs:py-3 rounded-lg xs:rounded-xl transition-all shadow-md flex items-center justify-center gap-1 whitespace-nowrap"
               >
-                <PlusCircle className="w-3.5 h-3.5 shrink-0" />
-                {t('postRfq')}
+                <PlusCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                {language === 'en' ? 'Post RFQ' : 'আরএফকিউ'}
               </Link>
               <Link 
                 href="/products" 
-                className="bg-gray-55 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold text-[8px] xs:text-xs sm:text-sm px-2.5 py-2 xs:px-4 xs:py-3 rounded-lg xs:rounded-xl transition-all shadow-sm text-center"
+                className="flex-1 bg-gray-55 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold text-[8px] xs:text-xs sm:text-sm px-2 py-2 xs:px-4 xs:py-3 rounded-lg xs:rounded-xl transition-all shadow-sm text-center flex items-center justify-center whitespace-nowrap"
               >
-                {t('exploreCatalog')}
+                {language === 'en' ? 'Explore' : 'পণ্য দেখুন'}
               </Link>
             </div>
           </div>
