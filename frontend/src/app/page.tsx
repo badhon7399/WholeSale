@@ -304,14 +304,14 @@ export default function Home() {
         </div>
         
         {/* Category Cards Grid (Wrapped & Responsive) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {displayCategories.map((cat) => (
             <Link 
               key={cat._id}
               href={`/products?category=${cat.slug}`}
-              className="bg-white rounded-3xl p-6 shadow-sm border border-gray-150 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group flex flex-col justify-between"
+              className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-6 shadow-sm border border-gray-150 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group flex flex-col justify-between"
             >
-              <div className="h-32 w-full rounded-2xl overflow-hidden mb-6 bg-gray-50 border border-gray-100">
+              <div className="h-20 xs:h-28 sm:h-32 w-full rounded-xl sm:rounded-2xl overflow-hidden mb-3 sm:mb-6 bg-gray-50 border border-gray-100">
                 <img 
                   alt={cat.name} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
@@ -319,12 +319,12 @@ export default function Home() {
                 />
               </div>
               <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-extrabold text-gray-900 text-sm sm:text-base">{cat.name}</h3>
-                  <p className="text-xs text-gray-400 mt-0.5">{cat.productCount.toLocaleString()}+ Listings</p>
+                <div className="min-w-0 flex-1 pr-1">
+                  <h3 className="font-extrabold text-gray-900 text-xs sm:text-base truncate">{cat.name}</h3>
+                  <p className="text-[9px] sm:text-xs text-gray-400 mt-0.5">{cat.productCount.toLocaleString()}+ Listings</p>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-brand-primary group-hover:text-white transition-all">
-                  <ArrowRight className="w-4 h-4" />
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-brand-primary group-hover:text-white transition-all shrink-0 hidden xs:flex">
+                  <ArrowRight className="w-3 sm:w-4 sm:h-4" />
                 </div>
               </div>
             </Link>
@@ -418,47 +418,47 @@ export default function Home() {
         </div>
 
         {/* Product Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {displayProducts.map((prod) => {
             const displayPrice = prod.priceTiers && prod.priceTiers.length > 0 ? prod.priceTiers[0].pricePerUnit : 0;
             return (
               <div 
                 key={prod._id}
-                className="bg-white rounded-3xl border border-gray-150 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col justify-between"
+                className="bg-white rounded-2xl sm:rounded-3xl border border-gray-150 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col justify-between"
               >
                 <div>
-                  <div className="h-52 bg-gray-50 overflow-hidden relative">
+                  <div className="h-28 xs:h-40 sm:h-52 bg-gray-50 overflow-hidden relative">
                     <img 
                       alt={prod.title} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                       src={prod.images && prod.images[0] ? prod.images[0] : 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80'}
                     />
-                    <div className="absolute top-4 left-4 bg-brand-dark/90 backdrop-blur-md text-white text-[9px] font-extrabold px-3 py-1 rounded-full border border-white/10 uppercase tracking-wide">
+                    <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-brand-dark/90 backdrop-blur-md text-white text-[7px] sm:text-[9px] font-extrabold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/10 uppercase tracking-wide">
                       MOQ: {prod.moq} {t('units')}
                     </div>
                   </div>
 
-                  <div className="p-5 space-y-2">
-                    <div className="flex items-center gap-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                      <span className="truncate max-w-[120px]">{prod.supplier.companyName}</span>
+                  <div className="p-3 sm:p-5 space-y-1.5 sm:space-y-2">
+                    <div className="flex items-center gap-1 text-[8px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                      <span className="truncate max-w-[80px] sm:max-w-[120px]">{prod.supplier.companyName}</span>
                       {prod.supplier.isVerified && (
-                        <ShieldCheck className="w-3.5 h-3.5 text-brand-primary shrink-0" />
+                        <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand-primary shrink-0" />
                       )}
                     </div>
-                    <h3 className="font-extrabold text-gray-900 text-sm leading-snug hover:text-brand-primary transition-colors line-clamp-2 min-h-[40px]">
+                    <h3 className="font-extrabold text-gray-900 text-xs sm:text-sm leading-snug hover:text-brand-primary transition-colors line-clamp-2 min-h-[32px] sm:min-h-[40px]">
                       <Link href={`/products/${prod._id}`}>{prod.title}</Link>
                     </h3>
                   </div>
                 </div>
 
-                <div className="p-5 pt-0 border-t border-gray-55 mt-auto flex items-center justify-between">
+                <div className="p-3 sm:p-5 pt-0 border-t border-gray-55 mt-auto flex flex-col xs:flex-row xs:items-center justify-between gap-1.5 xs:gap-2">
                   <div>
-                    <span className="text-[10px] text-gray-400 block font-bold uppercase tracking-wider">Wholesale</span>
-                    <span className="font-black text-sm sm:text-base text-brand-dark">{displayPrice} {t('bdt')}</span>
+                    <span className="text-[8px] sm:text-[10px] text-gray-400 block font-bold uppercase tracking-wider">Wholesale</span>
+                    <span className="font-black text-xs sm:text-base text-brand-dark">{displayPrice} {t('bdt')}</span>
                   </div>
                   <Link 
                     href={`/products/${prod._id}`}
-                    className="bg-brand-primary hover:bg-brand-dark text-white font-bold text-[10px] sm:text-xs px-4 py-2.5 rounded-xl transition-colors"
+                    className="bg-brand-primary hover:bg-brand-dark text-white font-bold text-[8px] xs:text-[10px] sm:text-xs px-2.5 py-2 xs:px-4 xs:py-2.5 rounded-lg xs:rounded-xl transition-colors text-center"
                   >
                     {t('viewDetails')}
                   </Link>
