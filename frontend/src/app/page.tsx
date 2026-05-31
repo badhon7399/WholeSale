@@ -304,12 +304,12 @@ export default function Home() {
         </div>
         
         {/* Category Cards Grid (Wrapped & Responsive) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-4 -mx-6 px-6 scrollbar-none sm:mx-0 sm:px-0 sm:pb-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
           {displayCategories.map((cat) => (
             <Link 
               key={cat._id}
               href={`/products?category=${cat.slug}`}
-              className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-6 shadow-sm border border-gray-150 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group flex flex-col justify-between"
+              className="w-[140px] xs:w-[180px] sm:w-auto shrink-0 snap-start bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-6 shadow-sm border border-gray-150 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group flex flex-col justify-between text-left"
             >
               <div className="h-20 xs:h-28 sm:h-32 w-full rounded-xl sm:rounded-2xl overflow-hidden mb-3 sm:mb-6 bg-gray-50 border border-gray-100">
                 <img 
