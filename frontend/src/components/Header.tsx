@@ -23,13 +23,15 @@ export const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [unreadMessages, setUnreadMessages] = useState(0);
 
-  if (pathname?.startsWith('/dashboard/admin')) {
-    return null;
-  }
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [categories, setCategories] = useState<{ _id: string; name: string; slug: string }[]>([]);
   const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Fetch unread messages count periodically
   useEffect(() => {
@@ -79,6 +81,10 @@ export const Header: React.FC = () => {
   const isRfqsActive = pathname === '/rfqs';
   const isSuppliersActive = pathname?.startsWith('/suppliers');
   const isDashboardActive = pathname?.startsWith('/dashboard') || pathname === '/login';
+
+  if (pathname?.startsWith('/dashboard/admin')) {
+    return null;
+  }
 
   return (
     <>
@@ -401,75 +407,76 @@ export const Header: React.FC = () => {
       </header>
 
       {/* Mobile Sticky Bottom Tab Bar */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-150 py-2.5 px-4 flex items-center justify-around z-50 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] pb-safe-bottom">
-        <Link 
-          href="/" 
-          className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
-            isHomeActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
-          }`}
-        >
-          <Home className={`w-5 h-5 transition-transform duration-300 ${isHomeActive ? 'scale-110' : ''}`} />
-          <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isHomeActive ? 'font-black' : ''}`}>{t('menuHome')}</span>
-          {isHomeActive && (
-            <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
-          )}
-        </Link>
-        
-        <Link 
-          href="/products" 
-          className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
-            isProductsActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
-          }`}
-        >
-          <ShoppingBag className={`w-5 h-5 transition-transform duration-300 ${isProductsActive ? 'scale-110' : ''}`} />
-          <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isProductsActive ? 'font-black' : ''}`}>{t('menuProducts')}</span>
-          {isProductsActive && (
-            <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
-          )}
-        </Link>
-        
-        <Link 
-          href="/rfqs" 
-          className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
-            isRfqsActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
-          }`}
-        >
-          <FileText className={`w-5 h-5 transition-transform duration-300 ${isRfqsActive ? 'scale-110' : ''}`} />
-          <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isRfqsActive ? 'font-black' : ''}`}>{t('menuRfqs')}</span>
-          {isRfqsActive && (
-            <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
-          )}
-        </Link>
-        
-        <Link 
-          href="/suppliers" 
-          className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
-            isSuppliersActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
-          }`}
-        >
-          <Factory className={`w-5 h-5 transition-transform duration-300 ${isSuppliersActive ? 'scale-110' : ''}`} />
-          <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isSuppliersActive ? 'font-black' : ''}`}>{t('menuSuppliers')}</span>
-          {isSuppliersActive && (
-            <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
-          )}
-        </Link>
-        
-        <Link 
-          href={user ? (user.role === 'admin' ? '/dashboard/admin' : user.role === 'buyer' ? '/dashboard/buyer' : '/dashboard/supplier') : '/login'} 
-          className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
-            isDashboardActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
-          }`}
-        >
-          <User className={`w-5 h-5 transition-transform duration-300 ${isDashboardActive ? 'scale-110' : ''}`} />
-          <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isDashboardActive ? 'font-black' : ''}`}>{t('menuDashboard')}</span>
-          {isDashboardActive && (
-            <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
-          )}
-        </Link>
-      </div>
-      
-      {/* Bottom spacer for mobile bottom navigation height */}
-      <div className="lg:hidden h-16 w-full" />
+      {isMounted && (
+        <>
+          <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-150 py-2.5 px-4 flex items-center justify-around z-50 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] pb-safe-bottom">
+            <Link 
+              href="/" 
+              className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
+                isHomeActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
+              }`}
+            >
+              <Home className={`w-5 h-5 transition-transform duration-300 ${isHomeActive ? 'scale-110' : ''}`} />
+              <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isHomeActive ? 'font-black' : ''}`}>{t('menuHome')}</span>
+              {isHomeActive && (
+                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
+              )}
+            </Link>
+            
+            <Link 
+              href="/products" 
+              className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
+                isProductsActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
+              }`}
+            >
+              <ShoppingBag className={`w-5 h-5 transition-transform duration-300 ${isProductsActive ? 'scale-110' : ''}`} />
+              <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isProductsActive ? 'font-black' : ''}`}>{t('menuProducts')}</span>
+              {isProductsActive && (
+                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
+              )}
+            </Link>
+            
+            <Link 
+              href="/rfqs" 
+              className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
+                isRfqsActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
+              }`}
+            >
+              <FileText className={`w-5 h-5 transition-transform duration-300 ${isRfqsActive ? 'scale-110' : ''}`} />
+              <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isRfqsActive ? 'font-black' : ''}`}>{t('menuRfqs')}</span>
+              {isRfqsActive && (
+                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
+              )}
+            </Link>
+            
+            <Link 
+              href="/suppliers" 
+              className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
+                isSuppliersActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
+              }`}
+            >
+              <Factory className={`w-5 h-5 transition-transform duration-300 ${isSuppliersActive ? 'scale-110' : ''}`} />
+              <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isSuppliersActive ? 'font-black' : ''}`}>{t('menuSuppliers')}</span>
+              {isSuppliersActive && (
+                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
+              )}
+            </Link>
+            
+            <Link 
+              href={user ? (user.role === 'admin' ? '/dashboard/admin' : user.role === 'buyer' ? '/dashboard/buyer' : '/dashboard/supplier') : '/login'} 
+              className={`flex flex-col items-center gap-1 transition-all duration-300 relative pb-2 ${
+                isDashboardActive ? 'text-brand-primary scale-110' : 'text-gray-400 hover:text-brand-primary'
+              }`}
+            >
+              <User className={`w-5 h-5 transition-transform duration-300 ${isDashboardActive ? 'scale-110' : ''}`} />
+              <span className={`text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 ${isDashboardActive ? 'font-black' : ''}`}>{t('menuDashboard')}</span>
+              {isDashboardActive && (
+                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-brand-primary animate-in zoom-in duration-300" />
+              )}
+            </Link>
+          </div>
+        </>
+      )}
     </>
   );
 };

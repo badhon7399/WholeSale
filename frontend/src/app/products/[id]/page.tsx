@@ -48,7 +48,7 @@ export default function ProductDetails({ params }: { params: Promise<Params> }) 
 
   if (loading) {
     return (
-      <div className="max-w-[1650px] mx-auto px-6 md:px-12 py-16 flex-grow animate-pulse">
+      <div className="max-w-[1650px] mx-auto px-4 sm:px-8 md:px-12 py-16 flex-grow animate-pulse">
         <div className="h-6 bg-gray-150 rounded w-1/4 mb-8" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="h-[350px] sm:h-[450px] bg-gray-150 rounded-3xl" />
@@ -120,7 +120,7 @@ export default function ProductDetails({ params }: { params: Promise<Params> }) 
   const priceCalculatorText = language === 'en' ? 'Bulk Price Calculator' : 'পাইকারি মূল্য ক্যালকুলেটর';
 
   return (
-    <div className="max-w-[1650px] mx-auto px-6 md:px-12 py-8 flex-grow bg-[#FAFAFA]">
+    <div className="max-w-[1650px] mx-auto px-4 sm:px-8 md:px-12 py-8 flex-grow bg-[#FAFAFA]">
       
       {/* Return link */}
       <Link href="/products" className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-brand-primary mb-6 transition-colors">

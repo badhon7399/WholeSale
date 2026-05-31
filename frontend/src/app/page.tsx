@@ -167,35 +167,35 @@ export default function Home() {
       
       {/* Hero Section */}
       <section className="bg-white rounded-b-[32px] sm:rounded-b-[40px] shadow-sm overflow-hidden relative border-b border-gray-150">
-        <div className="max-w-[1650px] mx-auto px-6 md:px-12 py-10 sm:py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        <div className="max-w-[1650px] mx-auto px-4 sm:px-8 md:px-12 py-6 sm:py-16 lg:py-20 grid grid-cols-12 gap-4 md:gap-10 lg:gap-12 items-center">
           
           {/* Left Content */}
-          <div className="lg:col-span-5 space-y-6 sm:space-y-8 pr-0 lg:pr-4">
-            <div className="inline-flex items-center gap-2 bg-brand-light text-brand-primary font-bold text-[10px] sm:text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-ping" />
+          <div className="col-span-7 lg:col-span-5 space-y-3 sm:space-y-8 pr-0 lg:pr-4 text-left">
+            <div className="inline-flex items-center gap-1.5 bg-brand-light text-brand-primary font-bold text-[8px] xs:text-[10px] sm:text-xs px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full uppercase tracking-wider">
+              <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-brand-primary animate-ping" />
               {t('verifiedTrade')}
             </div>
             
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-brand-dark leading-[1.15] tracking-tight">
+            <h1 className="text-[14px] xs:text-[18px] sm:text-4xl lg:text-5xl font-black text-brand-dark leading-[1.15] tracking-tight">
               {t('heroTitle')}
             </h1>
             
-            <p className="text-gray-500 text-sm sm:text-base leading-relaxed max-w-md">
+            <p className="text-gray-500 text-[9px] xs:text-[11px] sm:text-base leading-relaxed max-w-md">
               {t('heroSubtitle')}
             </p>
 
             {/* Sourcing Action Buttons */}
-            <div className="flex flex-wrap gap-4 pt-2">
+            <div className="flex flex-col xs:flex-row gap-2 pt-1 sm:pt-2">
               <Link 
                 href="/rfqs" 
-                className="bg-brand-primary hover:bg-brand-dark text-white font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl transition-all shadow-md flex items-center gap-1.5"
+                className="bg-brand-primary hover:bg-brand-dark text-white font-bold text-[8px] xs:text-xs sm:text-sm px-2.5 py-2 xs:px-4 xs:py-3 rounded-lg xs:rounded-xl transition-all shadow-md flex items-center justify-center gap-1"
               >
-                <PlusCircle className="w-4.5 h-4.5" />
+                <PlusCircle className="w-3.5 h-3.5 shrink-0" />
                 {t('postRfq')}
               </Link>
               <Link 
                 href="/products" 
-                className="bg-gray-55 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl transition-all shadow-sm"
+                className="bg-gray-55 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold text-[8px] xs:text-xs sm:text-sm px-2.5 py-2 xs:px-4 xs:py-3 rounded-lg xs:rounded-xl transition-all shadow-sm text-center"
               >
                 {t('exploreCatalog')}
               </Link>
@@ -203,7 +203,7 @@ export default function Home() {
           </div>
 
           {/* Right Showcase Image & Floating Stats */}
-          <div className="lg:col-span-7 relative h-[280px] sm:h-[400px] lg:h-[480px] rounded-3xl overflow-hidden shadow-2xl group border border-gray-150">
+          <div className="w-full col-span-5 lg:col-span-7 relative h-[140px] xs:h-[180px] sm:h-[400px] lg:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-md sm:shadow-2xl group border border-gray-150">
             <img 
               alt="Cargo shipping containers at a port" 
               className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[6s]" 
@@ -213,18 +213,18 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/95 via-transparent to-transparent" />
             
             {/* Floating Badge */}
-            <div className="absolute top-6 left-6 bg-brand-dark/90 backdrop-blur-md text-white px-4 py-3 rounded-2xl flex items-center gap-3 shadow-lg border border-white/10">
-              <div className="w-8 h-8 border border-white/20 rounded-xl flex items-center justify-center bg-white/5">
-                <Box className="w-4 h-4 text-brand-light" />
+            <div className="absolute top-3 left-3 sm:top-6 sm:left-6 bg-brand-dark/90 backdrop-blur-md text-white px-2.5 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl flex items-center gap-2 sm:gap-3 shadow-lg border border-white/10 hidden xs:flex">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 border border-white/20 rounded-lg sm:rounded-xl flex items-center justify-center bg-white/5 shrink-0 bg-white/10">
+                <Box className="w-3.5 h-3.5 text-brand-light" />
               </div>
-              <div>
-                <div className="font-extrabold text-xs tracking-wide">Secure B2B Trade</div>
-                <div className="text-[9px] text-gray-300">Audited Contracts & Quality</div>
+              <div className="text-left">
+                <div className="font-extrabold text-[8px] sm:text-xs tracking-wide">Secure B2B Trade</div>
+                <div className="text-[7px] sm:text-[9px] text-gray-300">Audited Contracts & Quality</div>
               </div>
             </div>
 
-            {/* Bottom Stats Grid */}
-            <div className="absolute bottom-0 inset-x-0 bg-brand-dark/95 backdrop-blur-md text-white px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center md:text-left">
+            {/* Bottom Stats Grid (Desktop & Tablet) */}
+            <div className="absolute bottom-0 inset-x-0 bg-brand-dark/95 backdrop-blur-md text-white px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center md:text-left hidden sm:grid">
               <div className="flex items-center gap-2.5 justify-center md:justify-start">
                 <Store className="w-5 h-5 text-brand-light shrink-0" />
                 <div>
@@ -257,6 +257,38 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Mobile Stats Grid - Rendered directly underneath the hero on mobile viewports */}
+      <div className="sm:hidden bg-brand-dark text-white px-5 py-4 grid grid-cols-2 gap-3 text-center rounded-2xl mx-4 my-4 border border-white/5 shadow-md">
+        <div className="flex items-center gap-2.5 justify-start pl-2">
+          <Store className="w-4.5 h-4.5 text-brand-light shrink-0" />
+          <div className="text-left">
+            <div className="font-black text-xs">10,000+</div>
+            <div className="text-[7px] text-brand-light/65 uppercase tracking-wider font-bold">Suppliers</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2.5 justify-start border-l border-white/10 pl-4">
+          <Box className="w-4.5 h-4.5 text-brand-light shrink-0" />
+          <div className="text-left">
+            <div className="font-black text-xs">1.2 Million</div>
+            <div className="text-[7px] text-brand-light/65 uppercase tracking-wider font-bold">Products</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2.5 justify-start border-t border-white/10 pt-3 pl-2">
+          <Users className="w-4.5 h-4.5 text-brand-light shrink-0" />
+          <div className="text-left">
+            <div className="font-black text-xs">50,000+</div>
+            <div className="text-[7px] text-brand-light/65 uppercase tracking-wider font-bold">Buyers</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2.5 justify-start border-l border-white/10 pl-4 border-t border-white/10 pt-3">
+          <Headset className="w-4.5 h-4.5 text-brand-light shrink-0" />
+          <div className="text-left">
+            <div className="font-black text-xs">100% Support</div>
+            <div className="text-[7px] text-brand-light/65 uppercase tracking-wider font-bold">Available</div>
+          </div>
+        </div>
+      </div>
 
       {/* Category Section */}
       <section className="max-w-[1650px] mx-auto px-6 md:px-12 py-12 sm:py-16">
