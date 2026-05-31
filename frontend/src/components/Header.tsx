@@ -25,8 +25,6 @@ export const Header: React.FC = () => {
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [categories, setCategories] = useState<{ _id: string; name: string; slug: string }[]>([]);
-  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -56,16 +54,7 @@ export const Header: React.FC = () => {
     return () => clearInterval(interval);
   }, [user]);
 
-  // Fetch categories for the categories dropdown
-  useEffect(() => {
-    api.get('/categories')
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setCategories(data as any[]);
-        }
-      })
-      .catch((err) => console.error('Error fetching categories in header:', err));
-  }, []);
+
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,37 +94,17 @@ export const Header: React.FC = () => {
 
           {/* Navigation - Desktop */}
           <nav className="hidden lg:flex items-center gap-8 text-sm font-semibold text-gray-600">
-            <div 
-              className={`relative cursor-pointer flex items-center gap-1.5 hover:text-brand-primary transition-colors py-2 group ${
+            <Link 
+              href="/products" 
+              className={`relative py-2 hover:text-brand-primary transition-colors group ${
                 isProductsActive ? 'text-brand-primary font-bold' : ''
               }`}
-              onMouseEnter={() => setShowCategoryMenu(true)}
-              onMouseLeave={() => setShowCategoryMenu(false)}
             >
-              {t('categories')}
-              <ChevronDown className="w-3.5 h-3.5 text-gray-400 group-hover:text-brand-primary transition-transform duration-300 group-hover:rotate-180" />
+              {t('shop')}
               <span className={`absolute bottom-0 left-0 right-0 h-0.5 bg-brand-primary rounded-full transform origin-left transition-transform duration-350 ${
                 isProductsActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
               }`} />
-              
-              {showCategoryMenu && (
-                <div className="absolute top-full left-0 bg-white shadow-xl rounded-xl border border-gray-100 py-3 w-56 animate-in fade-in slide-in-from-top-2 duration-200">
-                  {categories.length > 0 ? (
-                    categories.map((cat) => (
-                      <Link
-                        key={cat._id}
-                        href={`/products?category=${cat.slug}`}
-                        className="block px-4 py-2 hover:bg-brand-light hover:text-brand-primary text-gray-700 transition-colors"
-                      >
-                        {cat.name}
-                      </Link>
-                    ))
-                  ) : (
-                    <span className="block px-4 py-2 text-xs text-gray-400">Loading...</span>
-                  )}
-                </div>
-              )}
-            </div>
+            </Link>
             
             <Link 
               href="/suppliers" 

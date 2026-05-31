@@ -15,6 +15,7 @@ const translations: TranslationDictionary = {
   // Navbar & Footer Links
   home: { en: 'Home', bn: 'হোম' },
   categories: { en: 'Categories', bn: 'ক্যাটেগরি' },
+  shop: { en: 'Shop', bn: 'শপ' },
   suppliers: { en: 'Suppliers', bn: 'সরবরাহকারী' },
   rfqHub: { en: 'RFQ Hub', bn: 'আরএফকিউ হাব' },
   aboutUs: { en: 'About Us', bn: 'আমাদের সম্পর্কে' },
@@ -119,7 +120,7 @@ const translations: TranslationDictionary = {
 
   // Mobile Bottom Nav
   menuHome: { en: 'Home', bn: 'হোম' },
-  menuProducts: { en: 'Catalog', bn: 'পণ্য' },
+  menuProducts: { en: 'Shop', bn: 'শপ' },
   menuRfqs: { en: 'RFQs', bn: 'আরএফকিউ' },
   menuSuppliers: { en: 'Suppliers', bn: 'ফ্যাক্টরি' },
   menuDashboard: { en: 'Account', bn: 'আমার অ্যাকাউন্ট' },
