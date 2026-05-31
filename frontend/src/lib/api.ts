@@ -126,8 +126,89 @@ function getFallbackData(endpoint: string): any {
     return demoOrders;
   }
 
+  // 9. Auth Profile
+  if (path === '/auth/profile') {
+    console.log('API Fallback: Loaded profile from mock storage');
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('wholesale_logged_user');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    }
+    return null;
+  }
+
   return null;
 }
+
+const mockUsers = [
+  {
+    id: "buyer_aarong",
+    name: "Aarong Sourcing Hub",
+    email: "buyer@aarong.com",
+    role: "buyer" as const,
+    companyName: "Aarong BRAC Enterprises",
+    companyAddress: "Tejgaon I/A, Dhaka",
+    tradeLicense: "TR-10293",
+    isVerified: true,
+    phone: "+8801711223344"
+  },
+  {
+    id: "buyer_unimart",
+    name: "Unimart Procurement Division",
+    email: "buyer@unimart.com",
+    role: "buyer" as const,
+    companyName: "Unimart Group",
+    companyAddress: "Gulshan-2, Dhaka",
+    tradeLicense: "TR-55432",
+    isVerified: true,
+    phone: "+8801911998877"
+  },
+  {
+    id: "supplier_bengaljute",
+    name: "Bengal Jute Mills",
+    email: "supplier@bengaljute.com",
+    role: "supplier" as const,
+    companyName: "Bengal Jute Industries Ltd.",
+    companyAddress: "Narayanganj, Dhaka",
+    tradeLicense: "TR-88219",
+    isVerified: true,
+    phone: "+8801811556677"
+  },
+  {
+    id: "supplier_apexleather",
+    name: "Apex Leather Works",
+    email: "supplier@apexleather.com",
+    role: "supplier" as const,
+    companyName: "Apex Leather Goods",
+    companyAddress: "Savar, Dhaka",
+    tradeLicense: "TR-77218",
+    isVerified: true,
+    phone: "+8801712345678"
+  },
+  {
+    id: "supplier_dhakagarments",
+    name: "Dhaka Garments Ltd.",
+    email: "supplier@dhakagarments.com",
+    role: "supplier" as const,
+    companyName: "Dhaka Apparel Group",
+    companyAddress: "Mirpur, Dhaka",
+    tradeLicense: "TR-99231",
+    isVerified: true,
+    phone: "+8801611223344"
+  },
+  {
+    id: "supplier_chgspices",
+    name: "Chittagong Spices Ltd.",
+    email: "supplier@chgspices.com",
+    role: "supplier" as const,
+    companyName: "Chittagong Spices Ltd.",
+    companyAddress: "Khatunganj, Chittagong",
+    tradeLicense: "TR-44321",
+    isVerified: true,
+    phone: "+8801511223344"
+  }
+];
 
 // Fallback logic for writing data (simulates backend state mutations in-memory)
 function handleFallbackWrite(method: string, endpoint: string, body: any): any {
@@ -280,6 +361,58 @@ function handleFallbackWrite(method: string, endpoint: string, body: any): any {
       }
       return rfq;
     }
+  }
+
+  if (method === 'POST' && path === '/auth/login') {
+    console.log('API Fallback: Mocking login check for:', body.email);
+    const matched = mockUsers.find(u => u.email.toLowerCase() === body.email.toLowerCase());
+    if (matched) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('wholesale_logged_user', JSON.stringify(matched));
+      }
+      return { user: matched };
+    }
+    // Dynamic mock user for any other email address
+    const dynamicUser = {
+      id: `user_${Date.now()}`,
+      name: body.email.split('@')[0].toUpperCase(),
+      email: body.email,
+      role: body.email.includes('supplier') ? 'supplier' : 'buyer' as const,
+      companyName: `${body.email.split('@')[0].toUpperCase()} Enterprise`,
+      isVerified: true,
+      phone: '+8801700000000'
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('wholesale_logged_user', JSON.stringify(dynamicUser));
+    }
+    return { user: dynamicUser };
+  }
+
+  if (method === 'POST' && path === '/auth/register') {
+    console.log('API Fallback: Mocking registration for:', body.email);
+    const newUser = {
+      id: `user_${Date.now()}`,
+      name: body.name || 'New Registered Member',
+      email: body.email,
+      role: body.role || 'buyer',
+      companyName: body.companyName || 'New Company Ltd.',
+      companyAddress: body.companyAddress || 'Dhaka, Bangladesh',
+      tradeLicense: body.tradeLicense || 'TR-99999',
+      isVerified: true,
+      phone: body.phone || '+8801700000000'
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('wholesale_logged_user', JSON.stringify(newUser));
+    }
+    return { user: newUser };
+  }
+
+  if (method === 'POST' && path === '/auth/logout') {
+    console.log('API Fallback: Mocking logout');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('wholesale_logged_user');
+    }
+    return { success: true };
   }
 
   return null;
